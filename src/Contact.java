@@ -10,7 +10,9 @@ public interface Contact {
 *
 * @return the ID of the contact.
 */
-int getId();
+int getId(); 
+
+/**zzzzzzzzzz
 /**
 * Returns the name of the contact.
 *
