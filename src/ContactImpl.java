@@ -8,23 +8,27 @@
 public class ContactImpl implements Contact{
 
 	private String name;
-	private int id;
+	private int id = 0;
 	private String notes;
+	
 	private static int nextId = 0;
 	
-	/** Each contact has a unique ID generated from a static variable. This is the key
+	/** 
+	 * Each contact has a unique ID generated from a static variable. This acts as the key
 	 * since there may be more than one person with the same name
 	 * 
 	 * @param name
+	 * @Param notes
 	 */
 	
-	public ContactImpl(String name){
+	public ContactImpl(String name,String notes){
 		this.name = name;
-		this.id = generateId();
-		this.notes = "";
+		id = generateId();
+		this.notes = notes;
 		}
 	
-	/**Creation of the key is managed by the class through manipulating the static variable nextId
+	/**
+	 * Creation of the key is managed by the class through manipulating the static variable nextId
 	 * 
 	 * @return the unique ID
 	 */
