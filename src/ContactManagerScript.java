@@ -1,6 +1,8 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -116,6 +118,7 @@ public class ContactManagerScript {
 		addNewContact();
 		break;
 		case 2:
+		getContactsUsingId();
 		break;
 		case 3:
 		break;
@@ -162,6 +165,21 @@ public class ContactManagerScript {
 		cm.addNewContact(name, notes);
 		displayMainMenu();
 		
+	}
+	
+	public void getContactsUsingId(){
+		System.out.println("Enter ids...");
+		in = new Scanner(System.in);
+		String inputLine = in.nextLine();
+		String[] splitLine = inputLine.split(",");
+		int[] arr = new int[splitLine.length];
+		for (int i = 0; i < splitLine.length; i++){
+			arr[i] = Integer.parseInt(splitLine[i]);
+		}
+		
+		
+		cm.getContacts(arr);
+		displayMainMenu();
 	}
 	
 	
