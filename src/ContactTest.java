@@ -18,6 +18,10 @@ public void setUp(){
 	c2 = new ContactImpl("Contact#2","");
 }
 
+@After
+public void cleanUp(){
+	ContactImpl.resetNextId();
+}
 
 	
 @Test
@@ -42,10 +46,15 @@ public void testGetNotes(){
 }
 
 @Test
-public void testgetName(){
+public void testGetName(){
 	String output = c1.getName();
 	String expected = "Contact#1";
 	assertEquals(output,expected);
+}
+
+@Test
+public void testGetFutureMeetingUsingId(){
+	
 }
 	
 	
