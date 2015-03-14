@@ -1,4 +1,5 @@
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -92,6 +93,27 @@ public void testGetMeetingId(){
 	output = pm.getId();
 	expected = 200;
 	assertEquals(output,expected);
+	
+}
+
+@Test
+public void testGetContacts(){
+	Set<Contact> contacts = new HashSet<Contact>();
+	contacts.add(c1);
+	contacts.add(c2);
+	Calendar cal = Calendar.getInstance();
+	cal.add(Calendar.MILLISECOND, 1);
+	FutureMeeting fm = new FutureMeetingImpl(contacts,cal);
+	Set<Contact> output = fm.getContacts();
+	assertEquals(output,contacts);
+	
+	
+}
+
+
+
+private void assertArrayEquals(Set<Contact> output, Set<Contact> contacts) {
+	// TODO Auto-generated method stub
 	
 }
 
