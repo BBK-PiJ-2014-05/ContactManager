@@ -105,17 +105,9 @@ public void testGetContacts(){
 	cal.add(Calendar.MILLISECOND, 1);
 	FutureMeeting fm = new FutureMeetingImpl(contacts,cal);
 	Set<Contact> output = fm.getContacts();
-	assertEquals(output,contacts);
-	
-	
+	assertEquals(output,contacts);	
 }
 
-
-
-private void assertArrayEquals(Set<Contact> output, Set<Contact> contacts) {
-	// TODO Auto-generated method stub
-	
-}
 
 @Test 
 public void testaddNewPastMeeting(){
@@ -145,9 +137,17 @@ public void testAddNotes(){
 
 
 @Test
-public void testGetFutureMeetingId(){
-	
-	
+public void testGetFutureMeeting(){
+	Set<Contact> contacts = new HashSet<Contact>();
+	contacts.add(c1);
+	contacts.add(c2);
+	Calendar cal = Calendar.getInstance();
+	cal.add(Calendar.MILLISECOND,5);
+	int id = cm.addFutureMeeting(contacts, cal);
+	FutureMeeting futureMeeting = cm.getFutureMeeting(id);
+	int output = futureMeeting.getId();
+	int expected = 100;
+	assertEquals(output,expected);
 	
 }
 	
