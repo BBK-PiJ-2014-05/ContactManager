@@ -1,21 +1,14 @@
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Set;
 
 
-public class FutureMeetingImpl {
+public class FutureMeetingImpl extends MeetingImpl implements FutureMeeting {
 
-	private Contact[] contacts;
-	private int id;
-	Calendar date;
 	
 	
 	public FutureMeetingImpl(Set<Contact> contacts,Calendar date){
-		
-		
-		
-		
+		super(contacts,date);
 	}
-	
 	
 	
 	
