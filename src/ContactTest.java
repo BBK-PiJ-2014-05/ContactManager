@@ -1,9 +1,10 @@
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
@@ -83,16 +84,16 @@ public void testGetMeetingId(){
 	contacts.add(c1);
 	contacts.add(c2);
 	Calendar cal = Calendar.getInstance();
-	cal.add(Calendar.MILLISECOND, 1);
+	cal.add(Calendar.MILLISECOND, 10);
 	FutureMeeting fm = new FutureMeetingImpl(contacts,cal);
 	int output = fm.getId();
-	int expected = 100;
-	assertEquals(output,expected);
+	int expected = 101;
+	assertEquals(expected,output);
 	String notes = "test notes";
 	PastMeeting pm = new PastMeetingImpl(contacts,cal,notes);
 	output = pm.getId();
-	expected = 200;
-	assertEquals(output,expected);
+	expected = 102;
+	assertEquals(expected,output);
 	
 }
 
@@ -165,9 +166,65 @@ public void testGetMeeting(){
 	assertEquals(output,expected);
 	
 }
+
+@Test
+public void testGetFutureMeetingListContact(){
+	List<Meeting> testList = new ArrayList<Meeting>();
+	Set<Contact> testSet = new HashSet<Contact>();
+	testSet.add(c1);
+	testSet.add(c2);
+	Calendar cal = Calendar.getInstance();
+	cal.add(Calendar.MILLISECOND,10);
+	cm.addFutureMeeting(testSet, cal);
+	testList = cm.getFutureMeetingList(c1);
 	
 	
+}
+
+@Test
+public void testGetFutureMeetingListDate(){
 	
+}
 	
+@Test 
+public void testGetPastMeetingList(){
 	
+}
+
+@Test
+public void testGetMeetingDate(){
+	
+}
+
+@Test
+public void testGetMeetingNotes(){
+	
+}
+
+@Test
+public void testAddNewContact(){
+	String name = "testName";
+	String notes = "testNotes";
+	cm.addNewContact(name, notes);
+	Set<Contact> testContacts = new HashSet<Contact>();
+	testContacts = cm.getContacts(4);
+	Contact c1 = new ContactImpl("testName","testNotes");
+	assertSame(testContacts,c1);
+	
+}
+	
+@Test
+public void testGetContactsUsingIds(){
+	
+}
+
+@Test
+public void testGetContactsUsingName(){
+	
+}
+
+@Test
+public void testFlush(){
+	
+}
 }
