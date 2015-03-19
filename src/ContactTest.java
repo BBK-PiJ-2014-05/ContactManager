@@ -33,6 +33,7 @@ public void setUp(){
 	cm = new ContactManagerImpl();
 	
 	
+	
 }
 
 @After
@@ -72,7 +73,7 @@ public void testaddFutureMeeting(){
 	contacts.add(c1);
 	contacts.add(c2);
 	Calendar cal = Calendar.getInstance();
-	cal.add(Calendar.MILLISECOND,1);
+	cal.add(Calendar.MILLISECOND,10);
 	int output = cm.addFutureMeeting(contacts, cal);
 	int expected = 100;
 	assertEquals(output,expected);
@@ -117,17 +118,23 @@ public void testaddNewPastMeeting(){
 	contacts.add(c2);
 	Calendar cal = Calendar.getInstance();
 	cal.add(Calendar.MILLISECOND,1);
-	String notes = "test notes";
-	cm.addNewPastMeeting(contacts, cal, notes );
+	String expected = "test notes";
+	cm.addNewPastMeeting(contacts, cal,expected);
+	String output = cm.getPastMeeting(100).getNotes();
+	assertEquals(output,expected);
 	
 }
 
 @Test
 public void testGetPastMeeting(){
-	PastMeeting meeting = cm.getPastMeeting(200);
-	Calendar cal = meeting.getDate();
-	Date date = cal.getTime();
-	System.out.println(date);	
+	Set<Contact> contacts = new HashSet<Contact>();
+	contacts.add(c1);
+	contacts.add(c2);
+	Calendar cal = Calendar.getInstance();
+	cm.addNewPastMeeting(contacts,cal,"notes");
+	Meeting output = cm.getPastMeeting(100);
+	Meeting expected = cm.getMeeting(100);
+	assertEquals(output,expected);
 }
 
 @Test
@@ -159,17 +166,15 @@ public void testGetMeeting(){
 	Set<Contact> contacts = new HashSet<Contact>();
 	contacts.add(c1);
 	contacts.add(c2);
-	int expected = cm.addFutureMeeting(contacts, cal);
-	int output = cm.getMeeting(100).getId();
-	System.out.print("int output ="+  cm.getMeeting(100).getId());
-	//int expected = 100;
+	int meetingId = cm.addFutureMeeting(contacts, cal);
+	Meeting expected = cm.getFutureMeeting(meetingId);
+	Meeting output = cm.getMeeting(meetingId);
 	assertEquals(output,expected);
 	
 }
 
 @Test
 public void testGetFutureMeetingListContact(){
-	List<Meeting> testList = new ArrayList<Meeting>();
 	Set<Contact> testSet = new HashSet<Contact>();
 	testSet.add(c1);
 	testSet.add(c2);
@@ -198,6 +203,14 @@ public void testGetMeetingDate(){
 
 @Test
 public void testGetMeetingNotes(){
+	Set<Contact> testSet = new HashSet<Contact>();
+	testSet.add(c1);
+	testSet.add(c2);
+	Calendar cal = Calendar.getInstance();
+	PastMeeting meeting = new PastMeetingImpl(testSet,cal,"testnotes");
+	String output = meeting.getNotes();
+	String expected = "testnotes";
+	assertEquals(output,expected);
 	
 }
 
