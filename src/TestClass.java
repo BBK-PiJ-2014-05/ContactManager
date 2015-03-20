@@ -1,8 +1,11 @@
+import static org.junit.Assert.assertEquals;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 /** test case
  * 
@@ -19,26 +22,38 @@ public class TestClass {
 		}
 	
 	public void launch(){
-		ContactManager cm = new ContactManagerImpl();
-		Contact c1 = new ContactImpl("John","good guy");
-		Contact c2 = new ContactImpl("Dave","marketing specialist");
-		Contact c3 = new ContactImpl("John","Could be useful with accounts");
-		Set<Contact> contacts1 = new HashSet<Contact>();
-		contacts1.add(c1);
-		contacts1.add(c2);
-		Calendar cal1 = Calendar.getInstance();
-		cal1.add(Calendar.MILLISECOND,1000);
-		cm.addFutureMeeting(contacts1, cal1);
-		//cm.getFutureMeetingList(c1);
-		contacts1.clear();
-		contacts1.add(c3);
-		cm.addFutureMeeting(contacts1,cal1);
-		cm.getFutureMeetingList(c3);
-		
-		
-		
-		
+		ContactManagerImpl cm = new ContactManagerImpl();
+		addContacts(cm);
+		//addFutureMeetings(cm);
+		addPastMeetings(cm);
 	}
 	
-
+	public void addContacts(ContactManagerImpl cm){
+		cm.addNewContact("Geoff", "testNotesGeoff");
+		cm.addNewContact("Dave", "testnotesDave");
+		cm.addNewContact("Sharon", "testNotesSharon");
+		cm.addNewContact("Rachel", "testNotesRachel");
+	}
+	
+	public void addFutureMeetings(ContactManagerImpl cm){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MILLISECOND,100);
+		Set<Contact> contacts = new HashSet<Contact>();
+		contacts = cm.getContacts(0,1);
+		cm.addFutureMeeting(contacts, cal);
+		contacts = cm.getContacts(3);
+		cm.addFutureMeeting(contacts, cal);
+		cal.add(Calendar.MONTH,1);
+		contacts = cm.getContacts(2,3);
+		cm.addFutureMeeting(contacts, cal);
+	}
+	
+	public void addPastMeetings(ContactManagerImpl cm){
+		Calendar cal = Calendar.getInstance();
+		Set<Contact> contacts = new HashSet<Contact>();
+		contacts = cm.getContacts(2,3);
+		String notes = "testAddPastMeetingNotes";
+		cm.addNewPastMeeting(contacts, cal, notes);
+		System.out.println("pm:" + cm.getPastMeeting(100));
+	}
 }

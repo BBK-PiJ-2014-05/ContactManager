@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,7 @@ public class ContactManagerImpl implements ContactManager {
 	List<Meeting> futureMeetingList = new ArrayList<Meeting>();
 	List<Contact> contactList = new ArrayList<Contact>();
 	List<Meeting> meetingList = new ArrayList<Meeting>();
-	List<Meeting> pastMeetingList = new ArrayList<Meeting>();
+	List<PastMeeting> pastMeetingList = new ArrayList<PastMeeting>();
 	
 	
 	/**
@@ -43,7 +44,12 @@ public int addFutureMeeting(Set<Contact> contacts, Calendar date){
 * @throws IllegalArgumentException if there is a meeting with that ID happening in the future
 */
 public PastMeeting getPastMeeting(int id){
-	return null;
+		for (int i = 0; i < pastMeetingList.size(); i++){
+			PastMeeting pastMeeting = pastMeetingList.get(i);
+			if (pastMeeting.getId() == id){
+				return pastMeeting;
+			}
+		} return null;
 }
 /**
 * Returns the FUTURE meeting with the requested ID, or null if there is none.
@@ -153,7 +159,14 @@ public List<PastMeeting> getPastMeetingList(Contact contact){
 * @throws NullPointerException if any of the arguments is null
 */
 public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
-	
+	PastMeeting pastMeeting = new PastMeetingImpl(contacts,date,text);
+	if (contacts.isEmpty()){
+		throw new IllegalArgumentException("Set<Contact> contacts is Empty!");
+	}
+	if (contacts == null || date == null || text == null){
+		throw new NullPointerException("Set<Contact> contacts or Calendar date or String text is Null!");
+	}
+	pastMeetingList.add(pastMeeting);
 }
 /**
 * Add notes to a meeting.
@@ -170,7 +183,21 @@ public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text)
 * @throws NullPointerException if the notes are null
 */
 public void addMeetingNotes(int id, String text){
-	
+	for (int i = 0; i < pastMeetingList.size();i++){
+		PastMeeting pastMeeting = pastMeetingList.get(i);
+		if (pastMeeting.getId() == id) {
+			Set<Contact> contacts = new HashSet<Contact>();
+			contacts = pastMeeting.getContacts();
+			String notes = pastMeeting.getNotes() + text;
+			Calendar cal = new GregorianCalendar();
+			cal = pastMeeting.getDate();
+			pastMeetingList.remove(i);
+			PastMeeting replacePastMeeting = new PastMeetingImpl(contacts,cal,notes,id);
+			pastMeetingList.add(replacePastMeeting);
+			
+		}
+		
+	}
 }
 /**
 * Create a new contact with the specified name and notes.
