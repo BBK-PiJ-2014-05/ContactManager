@@ -12,6 +12,7 @@ public class ContactManagerImpl implements ContactManager {
 	List<Meeting> futureMeetingList = new ArrayList<Meeting>();
 	List<Contact> contactList = new ArrayList<Contact>();
 	List<Meeting> meetingList = new ArrayList<Meeting>();
+	List<Meeting> pastMeetingList = new ArrayList<Meeting>();
 	
 	
 	/**
@@ -55,10 +56,17 @@ public FutureMeeting getFutureMeeting(int id){
 	for (int i = 0; i < futureMeetingList.size();i++){
 		Meeting meeting = futureMeetingList.get(i);
 		if (meeting.getId() == id){
-			System.out.print("found");
-			FutureMeeting futureMeeting = (FutureMeeting)meeting;
-			return futureMeeting;
-		}
+			Calendar calNow = Calendar.getInstance();
+			Date now = calNow.getTime();
+			Calendar meetingDate = meeting.getDate();
+			Date meetingTime = meetingDate.getTime();
+			if (meetingTime.before(now)) {
+				throw new IllegalArgumentException("Error: Date is in the past");
+			} else {
+				FutureMeeting futureMeeting = (FutureMeeting)meeting;
+				return futureMeeting;
+			} 
+		} 
 	} return null;
 }
 /**
@@ -68,6 +76,20 @@ public FutureMeeting getFutureMeeting(int id){
 * @return the meeting with the requested ID, or null if it there is none.
 */
 public Meeting getMeeting(int id){
+	for (int i = 0; i < futureMeetingList.size(); i++){
+		Meeting meeting = futureMeetingList.get(i);
+		int x = meeting.getId();
+		if (x == id){
+			FutureMeeting futureMeeting = (FutureMeeting)meeting;
+			return futureMeeting;
+		} i++;
+	}
+	for (int j = 0; j < pastMeetingList.size(); j++){
+		Meeting pastMeeting = pastMeetingList.get(j);
+		if (pastMeeting.getId() == id){
+			return pastMeeting;
+		} j++;	
+	}
 	return null;
 }
 /**
@@ -88,10 +110,8 @@ public List<Meeting> getFutureMeetingList(Contact contact){
 		contactSet = futureMeetingList.get(i).getContacts();
 		if (contactSet.contains(contact)){
 			list.add(futureMeetingList.get(i));
-		}
-		
+		}	
 	}
-	
 	return list;
 }
 /**
