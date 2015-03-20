@@ -39,6 +39,7 @@ public void setUp(){
 @After
 public void cleanUp(){
 	ContactImpl.resetNextId();
+	MeetingImpl.resetId();
 }
 
 	
@@ -228,7 +229,16 @@ public void testAddNewContact(){
 	
 @Test
 public void testGetContactsUsingIds(){
-	
+	cm.addNewContact("John", "test");
+	cm.addNewContact("Dave", "test");
+	Set<Contact> output = new HashSet<Contact>();
+	output = cm.getContacts(0,1);
+	Calendar cal = Calendar.getInstance();
+	cal.add(Calendar.MILLISECOND, 10);
+	cm.addFutureMeeting(output, cal);
+	Set<Contact> expected = new HashSet<Contact>();
+	expected = cm.getFutureMeeting(100).getContacts();
+	assertEquals(output,expected);
 }
 
 @Test
