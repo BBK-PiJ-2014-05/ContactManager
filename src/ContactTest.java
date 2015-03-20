@@ -139,8 +139,17 @@ public void testGetPastMeeting(){
 }
 
 @Test
-public void testAddNotes(){
-	
+public void testAddMeetingNotes(){
+	Set<Contact> contacts = new HashSet<Contact>();
+	contacts.add(c1);
+	contacts.add(c2);
+	Calendar cal = Calendar.getInstance();
+	cm.addNewPastMeeting(contacts,cal,"initializationNotes");
+	PastMeeting pastMeeting = cm.getPastMeeting(100);
+	cm.addMeetingNotes(100, "______additionalNotes");
+	String expected = "initializationNotes______additionalNotes";
+	String output = cm.getPastMeeting(100).getNotes();
+	assertEquals(output,expected);
 	
 }
 
