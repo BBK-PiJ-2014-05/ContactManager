@@ -252,7 +252,14 @@ public void testGetContactsUsingIds(){
 
 @Test
 public void testGetContactsUsingName(){
-	
+	Set<Contact> output = new HashSet<Contact>();
+	Set<Contact> expected = new HashSet<Contact>();
+	cm.addNewContact("Geoff", "GeoffNotes");
+	cm.addNewContact("Geoff", "Geoff2Notes");
+	cm.addNewContact("Sharon", "SharonNotes");
+	expected = cm.getContacts(4,5);
+	output = cm.getContacts("Geoff");
+	assertEquals(output,expected);
 }
 
 @Test
