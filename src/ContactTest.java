@@ -26,10 +26,12 @@ public class ContactTest {
 	
 @Before	
 public void setUp(){
+	
 	c1 = new ContactImpl("Dave","new sales guy");
 	c2 = new ContactImpl("Darren","Some good product ideas");
 	c3 = new ContactImpl("Sharon","Great network, must get to know better");
 	c4 = new ContactImpl("Stuart","Knows about finance and company structures");
+	
 	cm = new ContactManagerImpl();
 	
 	
@@ -145,12 +147,10 @@ public void testAddMeetingNotes(){
 	contacts.add(c2);
 	Calendar cal = Calendar.getInstance();
 	cm.addNewPastMeeting(contacts,cal,"initializationNotes");
-	PastMeeting pastMeeting = cm.getPastMeeting(100);
 	cm.addMeetingNotes(100, "______additionalNotes");
 	String expected = "initializationNotes______additionalNotes";
 	String output = cm.getPastMeeting(100).getNotes();
 	assertEquals(output,expected);
-	
 }
 
 
@@ -198,7 +198,17 @@ public void testGetFutureMeetingListContact(){
 
 @Test
 public void testGetFutureMeetingListDate(){
-	
+	List<Meeting> expected = new ArrayList<Meeting>();
+	Set<Contact> contacts = new HashSet<Contact>();
+	contacts.add(c1);
+	contacts.add(c2);
+	Calendar cal = Calendar.getInstance();
+	cal.add(Calendar.SECOND, 1);
+	cm.addFutureMeeting(contacts,cal);
+	expected = cm.getFutureMeetingList(c1);
+	List<Meeting> output = new ArrayList<Meeting>();
+	output = cm.getFutureMeetingList(cal);
+	assertEquals(output,expected);
 }
 	
 @Test 
