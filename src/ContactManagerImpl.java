@@ -379,9 +379,21 @@ public Set<Contact> getContacts(String name){
  * @throws  
 */
 public void flush() {
-	
-    
-    
+	String fileString = "./ContactManager.ser";
+	File file = new File(fileString);
+	FileOutputStream fos = null;
+	ObjectOutputStream oos = null;
+	try	{
+		fos = new FileOutputStream(file);
+		oos = new ObjectOutputStream(fos);
+		oos.writeObject(contactList);
+		oos.writeObject(futureMeetingList);
+		oos.close();
+		
+	} catch (Exception ex){
+		ex.printStackTrace();
+		
+	}
    
   }
 
