@@ -1,4 +1,6 @@
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -8,7 +10,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Comparator;
 /**
@@ -32,6 +36,21 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 * of if any contact is unknown / non-existent
 */
 public int addFutureMeeting(Set<Contact> contacts, Calendar date){
+	boolean found = false;
+	Iterator<Contact> iterator = contacts.iterator();
+	while(iterator.hasNext()){
+		Contact element = (Contact) iterator.next();
+	for (int i = 0; i < contactList.size(); i++){
+		Contact c = contactList.get(i);
+		if (element.equals(c)){
+			found = true;
+		}
+	} 
+	} if (!found) {
+		throw new IllegalArgumentException("One or more contacts not found!");
+	}
+	
+	
 	Date meetingDate = date.getTime();
 	Calendar calNow = Calendar.getInstance();
 	Date now = calNow.getTime();
@@ -41,6 +60,7 @@ public int addFutureMeeting(Set<Contact> contacts, Calendar date){
 	Meeting futureMeeting = new FutureMeetingImpl(contacts,date);
 	futureMeetingList.add(futureMeeting);
 	return futureMeeting.getId();
+	
 }
 /**
 1* Returns the PAST meeting with the requested ID, or null if it there is none.
@@ -116,17 +136,46 @@ public Meeting getMeeting(int id){
 * @throws IllegalArgumentException if the contact does not exist
 */
 public List<Meeting> getFutureMeetingList(Contact contact){
-	List<Meeting> list = new ArrayList<Meeting>();
-	try {
-	for (int i = 0; i < futureMeetingList.size(); i++){
-		Set<Contact> contactSet = new HashSet<Contact>();
-		contactSet = futureMeetingList.get(i).getContacts();
-		if (contactSet.contains(contact)){
-			list.add(futureMeetingList.get(i));
+	List<Meeting> fmList = new ArrayList<Meeting>();
+	boolean found = false;
+	for (int i = 0; i < contactList.size();i++){
+		Contact c = contactList.get(i);
+		if (c.equals(contact)){
+			found = true;
+		}
+	} 
+	if (!found){
+		throw new IllegalArgumentException("Contact does not exist! (getFutureMeetingList(contact)");
+	}
+	
+	for (int j = 0; j < futureMeetingList.size(); j++){
+		Meeting meeting = futureMeetingList.get(j);
+		Calendar meetingCal = meeting.getDate();
+		Calendar calNow = Calendar.getInstance();
+		Date now = calNow.getTime();
+		Date meetingTime = meetingCal.getTime();
+		if (meetingTime.before(now)) {
+			System.out.println("Meeting " + meeting.toString() + " is now in the past-- add notes: ");
+			Scanner in = new Scanner(System.in);
+			String inputNotes = in.nextLine();
+			int meetingId = meeting.getId();
+			Set<Contact> contactSet = new HashSet<Contact>();
+			contactSet = meeting.getContacts();
+			PastMeeting pastMeeting = new PastMeetingImpl(contactSet,meetingCal,inputNotes,meetingId);
+			pastMeetingList.add(pastMeeting);
+			futureMeetingList.remove(j);
+		}	
+	}
+	
+	for (int k = 0; k < futureMeetingList.size(); k++){
+		Meeting m = futureMeetingList.get(k);
+		Set<Contact> c = m.getContacts();
+		if(c.contains(contact)){
+			fmList.add(m);
 		}	
 	} 
-	} catch(IllegalArgumentException e) {System.out.println("Contact does not exist!");
-	} return list;
+	//Collections.sort(fmList);
+	 return fmList;
 }
 /**
 * Returns the list of meetings that are scheduled for, or that took
@@ -140,13 +189,15 @@ public List<Meeting> getFutureMeetingList(Contact contact){
 * @return the list of meetings
 */
 public List<Meeting> getFutureMeetingList(Calendar date){
+		
+	
 	
 		date.clear(Calendar.HOUR_OF_DAY);
 		date.clear(Calendar.AM_PM);
 		date.clear(Calendar.MINUTE);
 		date.clear(Calendar.SECOND);
 		date.clear(Calendar.MILLISECOND);
-		List<Meeting> fmList = new ArrayList<Meeting>();
+		List<MeetingImpl> fmList = new ArrayList<MeetingImpl>();
 			for (int i = 0; i < futureMeetingList.size(); i++){
 				Meeting meeting = futureMeetingList.get(i);
 				Calendar dateOfMeeting = meeting.getDate();
@@ -156,12 +207,14 @@ public List<Meeting> getFutureMeetingList(Calendar date){
 				dateOfMeeting.clear(Calendar.SECOND);
 				dateOfMeeting.clear(Calendar.MILLISECOND);
 					if (dateOfMeeting.equals(date)){
-						fmList.add(meeting);
+						fmList.add((MeetingImpl)meeting);
 					}
 		
 			}
-		//Collections.sort(fmList);
-		return fmList;
+		Collections.sort(fmList);
+		List<Meeting> returnList = new ArrayList<Meeting>();
+		returnList.addAll(fmList);
+		return returnList;
 }
 /**
 * Returns the list of past meetings in which this contact has participated.
@@ -210,10 +263,10 @@ public List<PastMeeting> getPastMeetingList(Contact contact){
 public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
 	PastMeeting pastMeeting = new PastMeetingImpl(contacts,date,text);
 	if (contacts.isEmpty()){
-		throw new IllegalArgumentException("Set<Contact> contacts is Empty!");
+		throw new IllegalArgumentException("Set<Contact> contacts is Empty!(addNewPastMeeting)");
 	}
 	if (contacts == null || date == null || text == null){
-		throw new NullPointerException("Set<Contact> contacts or Calendar date or String text is Null!");
+		throw new NullPointerException("Set<Contact> contacts or Calendar date or String text is Null!(addNewPastMeeting");
 	}
 	pastMeetingList.add(pastMeeting);
 }
@@ -233,7 +286,7 @@ public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text)
 */
 public void addMeetingNotes(int id, String text){
 	if (text == null){
-		throw new NullPointerException("Notes are null!");
+		throw new NullPointerException("Notes are null!(AddMeetingNotes)");
 	}
 	boolean found = false;
 	for (int i = 0; i < pastMeetingList.size();i++){
@@ -323,24 +376,12 @@ public Set<Contact> getContacts(String name){
 *
 * This method must be executed when the program is
 * closed and when/if the user requests it.
+ * @throws  
 */
-public void flush(){
-	String filename = "contactManagerImpl.ser";
-
-    // save the object to file
-    FileOutputStream fos = null;
-    ObjectOutputStream out = null;
-    try {
-      fos = new FileOutputStream(filename);
-      out = new ObjectOutputStream(fos);
-      out.writeObject(futureMeetingList);
-      out.writeObject(pastMeetingList);
-      out.writeObject(contactList);
-
-      out.close();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+public void flush() {
+	
+    
+    
    
   }
 
