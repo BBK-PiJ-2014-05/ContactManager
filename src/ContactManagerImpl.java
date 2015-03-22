@@ -22,7 +22,6 @@ public class ContactManagerImpl implements ContactManager, Serializable {
 
 	List<Meeting> futureMeetingList = new ArrayList<Meeting>();
 	List<Contact> contactList = new ArrayList<Contact>();
-	//List<Meeting> meetingList = new ArrayList<Meeting>();
 	List<PastMeeting> pastMeetingList = new ArrayList<PastMeeting>();
 	
 	
@@ -47,7 +46,7 @@ public int addFutureMeeting(Set<Contact> contacts, Calendar date){
 		}
 	} 
 	} if (!found) {
-		throw new IllegalArgumentException("One or more contacts not found!");
+		throw new IllegalArgumentException("One or more contacts not found!(addFutureMeeting)");
 	}
 	
 	
@@ -85,6 +84,7 @@ public PastMeeting getPastMeeting(int id){
 * @throws IllegalArgumentException if there is a meeting with that ID happening in the past
 */
 public FutureMeeting getFutureMeeting(int id){
+	
 	for (int i = 0; i < futureMeetingList.size();i++){
 		Meeting meeting = futureMeetingList.get(i);
 		if (meeting.getId() == id){
@@ -108,6 +108,7 @@ public FutureMeeting getFutureMeeting(int id){
 * @return the meeting with the requested ID, or null if it there is none.
 */
 public Meeting getMeeting(int id){
+	
 	for (int i = 0; i < futureMeetingList.size(); i++){
 		Meeting meeting = futureMeetingList.get(i);
 		int x = meeting.getId();
@@ -136,7 +137,7 @@ public Meeting getMeeting(int id){
 * @throws IllegalArgumentException if the contact does not exist
 */
 public List<Meeting> getFutureMeetingList(Contact contact){
-	List<Meeting> fmList = new ArrayList<Meeting>();
+	List<MeetingImpl> fmList = new ArrayList<MeetingImpl>();
 	boolean found = false;
 	for (int i = 0; i < contactList.size();i++){
 		Contact c = contactList.get(i);
@@ -164,6 +165,7 @@ public List<Meeting> getFutureMeetingList(Contact contact){
 			PastMeeting pastMeeting = new PastMeetingImpl(contactSet,meetingCal,inputNotes,meetingId);
 			pastMeetingList.add(pastMeeting);
 			futureMeetingList.remove(j);
+			in.close();
 		}	
 	}
 	
@@ -171,11 +173,14 @@ public List<Meeting> getFutureMeetingList(Contact contact){
 		Meeting m = futureMeetingList.get(k);
 		Set<Contact> c = m.getContacts();
 		if(c.contains(contact)){
-			fmList.add(m);
+			fmList.add((MeetingImpl)m);
 		}	
 	} 
-	//Collections.sort(fmList);
-	 return fmList;
+	Collections.sort(fmList);
+	
+	 List<Meeting> returnList = new ArrayList<Meeting>();
+	returnList.addAll(fmList);
+	return returnList;
 }
 /**
 * Returns the list of meetings that are scheduled for, or that took
@@ -190,8 +195,6 @@ public List<Meeting> getFutureMeetingList(Contact contact){
 */
 public List<Meeting> getFutureMeetingList(Calendar date){
 		
-	
-	
 		date.clear(Calendar.HOUR_OF_DAY);
 		date.clear(Calendar.AM_PM);
 		date.clear(Calendar.MINUTE);
@@ -228,6 +231,7 @@ public List<Meeting> getFutureMeetingList(Calendar date){
 * @throws IllegalArgumentException if the contact does not exist
 */
 public List<PastMeeting> getPastMeetingList(Contact contact){
+	
 	boolean found = false;
 	for (int i = 0; i < contactList.size(); i++){
 		Contact c = contactList.get(i);
@@ -235,7 +239,7 @@ public List<PastMeeting> getPastMeetingList(Contact contact){
 			found = true;
 		}
 	} if (!found){
-		throw new IllegalArgumentException("Contact does not exist!");
+		throw new IllegalArgumentException("Contact does not exist!(getPastMeeting(contact))");
 	}
 	
 	List<PastMeeting> pmList = new ArrayList<PastMeeting>();
@@ -261,6 +265,7 @@ public List<PastMeeting> getPastMeetingList(Contact contact){
 * @throws NullPointerException if any of the arguments is null
 */
 public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
+	
 	PastMeeting pastMeeting = new PastMeetingImpl(contacts,date,text);
 	if (contacts.isEmpty()){
 		throw new IllegalArgumentException("Set<Contact> contacts is Empty!(addNewPastMeeting)");
@@ -285,6 +290,7 @@ public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text)
 * @throws NullPointerException if the notes are null
 */
 public void addMeetingNotes(int id, String text){
+	
 	if (text == null){
 		throw new NullPointerException("Notes are null!(AddMeetingNotes)");
 	}
@@ -302,7 +308,7 @@ public void addMeetingNotes(int id, String text){
 			Date now = calNow.getTime();
 			Date meetingTime = cal.getTime();
 			if (now.before(meetingTime)) {
-				throw new IllegalArgumentException("Error: Date is in the future!");
+				throw new IllegalArgumentException("Error: Date is in the future!(addMeetingNotes)");
 			}
 			pastMeetingList.remove(i);
 			PastMeeting replacePastMeeting = new PastMeetingImpl(contacts,cal,notes,id);
@@ -311,7 +317,7 @@ public void addMeetingNotes(int id, String text){
 		}
 		
 	} if (!found){
-		throw new IllegalArgumentException("Meeting does not exist!");
+		throw new IllegalArgumentException("Meeting does not exist!(addMeetingNotes)");
 	}
 }
 /**
@@ -322,8 +328,9 @@ public void addMeetingNotes(int id, String text){
 * @throws NullPointerException if the name or the notes are null
 */
 public void addNewContact(String name, String notes){
+	
 	if (name == null || notes == null){
-		throw new NullPointerException("Name or notes are null");
+		throw new NullPointerException("Name or notes are null!(addNewContact)");
 	}
 	Contact contact = new ContactImpl(name,notes);
 	contactList.add(contact);
@@ -336,6 +343,7 @@ public void addNewContact(String name, String notes){
 * @throws IllegalArgumentException if any of the IDs does not correspond to a real contact
 */
 public Set<Contact> getContacts(int... ids){
+	
 	Set<Contact> contactSet = new HashSet<Contact>();
 	boolean found = false;
 	for(int i = 0; i < ids.length; i++){
@@ -346,7 +354,7 @@ public Set<Contact> getContacts(int... ids){
 			}
 		} 
 	} if (!found) {
-		throw new IllegalArgumentException("Id given does not correspond to a real contact!");
+		throw new IllegalArgumentException("At least one ID does not correspond to a real contact!(getContacts");
 	}
 	return contactSet;
 }
@@ -358,8 +366,9 @@ public Set<Contact> getContacts(int... ids){
 * @throws NullPointerException if the parameter is null
 */
 public Set<Contact> getContacts(String name){
+	
 	if (name == null) {
-		throw new NullPointerException("No name provided!");
+		throw new NullPointerException("No name provided!(getContactsName)");
 	}
 	
 	Set<Contact> contactSet = new HashSet<Contact>();
@@ -379,6 +388,7 @@ public Set<Contact> getContacts(String name){
  * @throws  
 */
 public void flush() {
+	
 	String fileString = "./ContactManager.ser";
 	File file = new File(fileString);
 	FileOutputStream fos = null;

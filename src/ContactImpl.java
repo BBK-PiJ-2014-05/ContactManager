@@ -55,11 +55,19 @@ public class ContactImpl implements Contact, Serializable {
 		notes = notes + " ; "+ note;
 	}
 	
+	/**
+	 * displays the object's variables in a user-friendly way
+	 */
+	
 	@Override
 	public String toString(){
 		String string = "Contact ID: " + id + " Contact Name: " + name + " Contact Notes: " + notes;
 		return string;
 	}
+	
+	/**
+	 * used for testing, to avoid escalating id's
+	 */
 	
 	public static void resetNextId(){
 		nextId = 0;

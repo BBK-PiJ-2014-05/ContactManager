@@ -7,7 +7,6 @@ import java.util.*;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 
@@ -22,6 +21,7 @@ public class ContactTest {
 	
 @Before	
 public void setUp(){
+	
 	cm = new ContactManagerImpl();
 	contactSet = new HashSet<Contact>();
 	sdf = new SimpleDateFormat("dd/M/yyyy hh:mm");
@@ -29,13 +29,12 @@ public void setUp(){
 	cm.addNewContact("Dave", "dave notes");
 	cm.addNewContact("Sharon", "sharon notes");
 	cm.addNewContact("Geoff", "geoff notes");
-	
-	
-	
+		
 }
 
 @After
 public void cleanUp(){
+	
 	ContactImpl.resetNextId();
 	MeetingImpl.resetId();
 }
@@ -43,11 +42,13 @@ public void cleanUp(){
 	
 @Test(expected = IllegalArgumentException.class)
 public void GetContactsFail(){
+	
 	contactSet = cm.getContacts(9);	
 }
 
 @Test
 public void GetContactsPass(){
+	
 	contactSet = cm.getContacts(0,1,2);
 	int output = contactSet.size();
 	int expected = 3;
@@ -56,6 +57,7 @@ public void GetContactsPass(){
 
 @Test
 public void testGetNotes(){
+	
 	contactSet = cm.getContacts(0);
 	Iterator<Contact> it = contactSet.iterator();
 	Contact c = it.next();
@@ -68,6 +70,7 @@ public void testGetNotes(){
 
 @Test
 public void testaddnewContact(){
+	
 	cm.addNewContact("Cindy", "cindy notes");
 	contactSet = cm.getContacts(4);
 	Iterator<Contact> it = contactSet.iterator();
@@ -103,7 +106,7 @@ public void addFutureMeetingFail(){
 @Test
 public void testGetMeetingId(){
 	
-	contactSet = cm.getContacts(0,1);
+	contactSet = cm.getContacts(0,9);
 	Calendar cal = Calendar.getInstance();
 	cal.add(Calendar.MILLISECOND, 100);
 	int output = cm.addFutureMeeting(contactSet,cal);
@@ -151,151 +154,93 @@ public void testAddMeetingNotes(){
 	String expected = "init notes__add notes";
 	assertEquals(expected,output);	
 }
-
-
-@Test
-public void testGetFutureMeeting(){
-	
-	Set<Contact> contacts = new HashSet<Contact>();
-	contacts.add(c1);
-	contacts.add(c2);
-	Calendar cal = Calendar.getInstance();
-	cal.add(Calendar.MILLISECOND,5);
-	int id = cm.addFutureMeeting(contacts, cal);
-	FutureMeeting futureMeeting = cm.getFutureMeeting(id);
-	int output = futureMeeting.getId();
-	int expected = 100;
-	assertEquals(output,expected);
-	
-}
 	
 @Test
 public void testGetMeeting(){
+	
 	Calendar cal = Calendar.getInstance();
-	cal.add(Calendar.MILLISECOND,10);
-	Set<Contact> contacts = new HashSet<Contact>();
-	contacts.add(c1);
-	contacts.add(c2);
-	int meetingId = cm.addFutureMeeting(contacts, cal);
+	cal.add(Calendar.MILLISECOND,100);
+	contactSet = cm.getContacts(0,1,2);
+	int meetingId = cm.addFutureMeeting(contactSet,cal);
 	Meeting expected = cm.getFutureMeeting(meetingId);
 	Meeting output = cm.getMeeting(meetingId);
-	assertEquals(output,expected);
+	assertEquals(expected,output);
 	
+	cal.add(Calendar.MILLISECOND,-100);
+	cm.addNewPastMeeting(contactSet, cal, "test notes");
+	expected = cm.getPastMeeting(101);
+	output = cm.getMeeting(101);
+	assertEquals(expected,output);
 }
+
 
 @Test
 public void testGetFutureMeetingListContact(){
-	Set<Contact> testSet = new HashSet<Contact>();
-	testSet.add(c1);
-	testSet.add(c2);
+	
+	contactSet = cm.getContacts(0,1,2);
 	Calendar cal = Calendar.getInstance();
-	cal.add(Calendar.MILLISECOND,10);
-	cm.addFutureMeeting(testSet, cal);
+	cal.add(Calendar.MILLISECOND,100);
+	cm.addFutureMeeting(contactSet, cal);
+	
+	contactSet = cm.getContacts(0,3,4);
+	cal.add(Calendar.MILLISECOND,100);
+	cm.addFutureMeeting(contactSet,cal);
+	
 	List<Meeting> output = new ArrayList<Meeting>();
-	output = cm.getFutureMeetingList(c1);
+	contactSet = cm.getContacts(0);
+	Iterator<Contact> it = contactSet.iterator();
+	Contact c = it.next();
+	output = cm.getFutureMeetingList(c);
 	List<Meeting> expected = new ArrayList<Meeting>();
 	expected = cm.getFutureMeetingList(cal);
-	assertEquals(output,expected);
-	
-	
-	
+	assertEquals(expected,output);
 }
 
 @Test
 public void testGetFutureMeetingListDate(){
-	List<Meeting> expected = new ArrayList<Meeting>();
-	Set<Contact> contacts = new HashSet<Contact>();
-	contacts.add(c1);
-	contacts.add(c2);
+	
+	contactSet = cm.getContacts(0,1,2);
 	Calendar cal = Calendar.getInstance();
 	cal.add(Calendar.SECOND, 1);
-	cm.addFutureMeeting(contacts,cal);
-	expected = cm.getFutureMeetingList(c1);
+	cm.addFutureMeeting(contactSet,cal);
+	
+	contactSet.clear();
+	contactSet = cm.getContacts(0,2);
+	cm.addFutureMeeting(contactSet, cal);
+	
 	List<Meeting> output = new ArrayList<Meeting>();
 	output = cm.getFutureMeetingList(cal);
-	assertEquals(output,expected);
+	List<Meeting> expected = new ArrayList<Meeting>();
+	
+	contactSet.clear();
+	contactSet = cm.getContacts(0);
+	Iterator<Contact> it = contactSet.iterator();
+	Contact c = it.next();
+	
+	expected = cm.getFutureMeetingList(c);
+	assertEquals(expected, output);
 }
 	
-@Test 
-public void testGetPastMeetingList(){
-	Set<Contact> contacts = new HashSet<Contact>();
-	contacts.add(c1);
-	contacts.add(c2);
-	Calendar cal = Calendar.getInstance();
-	String notes = "tetsnotes1";
-	cm.addNewPastMeeting(contacts, cal, notes);
-	notes = notes + "morenotes";
-	cm.addNewPastMeeting(contacts,cal,notes);
-	List<PastMeeting> pastMeetingList = new ArrayList<PastMeeting>();
-	pastMeetingList = cm.getPastMeetingList(c1);
-	PastMeeting output = pastMeetingList.get(0);
-	PastMeeting expected = cm.getPastMeeting(100);
-	assertEquals(output,expected);
-}
 
 @Test
 public void testGetMeetingDate(){
-	Set<Contact> c = new HashSet<Contact>();
-	c.add(c1);
-	c.add(c2);
+	
+	contactSet = cm.getContacts(0,1);
 	Calendar cal = Calendar.getInstance();
 	cal.add(Calendar.MILLISECOND,100);
-	Meeting m = new FutureMeetingImpl(c,cal);
+	cm.addFutureMeeting(contactSet, cal);
 	Calendar expected = cal;
-	Calendar output = m.getDate();
-	assertEquals(output,expected);
-	
-}
-
-@Test
-public void testGetMeetingNotes(){
-	Set<Contact> testSet = new HashSet<Contact>();
-	testSet.add(c1);
-	testSet.add(c2);
-	Calendar cal = Calendar.getInstance();
-	PastMeeting meeting = new PastMeetingImpl(testSet,cal,"testnotes");
-	String output = meeting.getNotes();
-	String expected = "testnotes";
-	assertEquals(output,expected);
-	
-}
-
-@Test
-public void testAddNewContact(){
-	String name = "testName";
-	String notes = "testNotes";
-	cm.addNewContact(name, notes);
-	Set<Contact> testContacts = new HashSet<Contact>();
-	testContacts = cm.getContacts(4);
-	Contact c1 = new ContactImpl("testName","testNotes");
-	assertSame(testContacts,c1);
-	
-}
-	
-@Test
-public void testGetContactsUsingIds(){
-	cm.addNewContact("John", "test");
-	cm.addNewContact("Dave", "test");
-	Set<Contact> output = new HashSet<Contact>();
-	output = cm.getContacts(0,1);
-	Calendar cal = Calendar.getInstance();
-	cal.add(Calendar.MILLISECOND, 10);
-	cm.addFutureMeeting(output, cal);
-	Set<Contact> expected = new HashSet<Contact>();
-	expected = cm.getFutureMeeting(100).getContacts();
-	assertEquals(output,expected);
+	Calendar output = cm.getFutureMeeting(100).getDate();
+	assertEquals(expected, output);
 }
 
 @Test
 public void testGetContactsUsingName(){
-	Set<Contact> output = new HashSet<Contact>();
+	contactSet = cm.getContacts("Geoff");
 	Set<Contact> expected = new HashSet<Contact>();
-	cm.addNewContact("Geoff", "GeoffNotes");
-	cm.addNewContact("Geoff", "Geoff2Notes");
-	cm.addNewContact("Sharon", "SharonNotes");
-	expected = cm.getContacts(4,5);
-	output = cm.getContacts("Geoff");
-	assertEquals(output,expected);
+	expected = cm.getContacts(0,3);
+	assertEquals(expected,contactSet);
+	
 }
 
 @Test
