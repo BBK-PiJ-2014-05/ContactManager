@@ -191,7 +191,12 @@ public void testGetFutureMeetingListContact(){
 	Calendar cal = Calendar.getInstance();
 	cal.add(Calendar.MILLISECOND,10);
 	cm.addFutureMeeting(testSet, cal);
-	testList = cm.getFutureMeetingList(c1);
+	List<Meeting> output = new ArrayList<Meeting>();
+	output = cm.getFutureMeetingList(c1);
+	List<Meeting> expected = new ArrayList<Meeting>();
+	expected = cm.getFutureMeetingList(cal);
+	assertEquals(output,expected);
+	
 	
 	
 }
@@ -213,7 +218,19 @@ public void testGetFutureMeetingListDate(){
 	
 @Test 
 public void testGetPastMeetingList(){
-	
+	Set<Contact> contacts = new HashSet<Contact>();
+	contacts.add(c1);
+	contacts.add(c2);
+	Calendar cal = Calendar.getInstance();
+	String notes = "tetsnotes1";
+	cm.addNewPastMeeting(contacts, cal, notes);
+	notes = notes + "morenotes";
+	cm.addNewPastMeeting(contacts,cal,notes);
+	List<PastMeeting> pastMeetingList = new ArrayList<PastMeeting>();
+	pastMeetingList = cm.getPastMeetingList(c1);
+	PastMeeting output = pastMeetingList.get(0);
+	PastMeeting expected = cm.getPastMeeting(100);
+	assertEquals(output,expected);
 }
 
 @Test

@@ -24,8 +24,10 @@ public class TestClass {
 	public void launch(){
 		ContactManagerImpl cm = new ContactManagerImpl();
 		addContacts(cm);
-		//addFutureMeetings(cm);
-		addPastMeetings(cm);
+		//testFutureMeetings(cm);
+		testPastMeetings(cm);
+		//testGetContacts(cm);
+		//testGetFutureMeetingListDate(cm);
 	}
 	
 	public void addContacts(ContactManagerImpl cm){
@@ -33,9 +35,10 @@ public class TestClass {
 		cm.addNewContact("Dave", "testnotesDave");
 		cm.addNewContact("Sharon", "testNotesSharon");
 		cm.addNewContact("Rachel", "testNotesRachel");
+		cm.addNewContact("Geoff", "testNotesGeoff");
 	}
 	
-	public void addFutureMeetings(ContactManagerImpl cm){
+	public void testFutureMeetings(ContactManagerImpl cm){
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MILLISECOND,100);
 		Set<Contact> contacts = new HashSet<Contact>();
@@ -43,17 +46,53 @@ public class TestClass {
 		cm.addFutureMeeting(contacts, cal);
 		contacts = cm.getContacts(3);
 		cm.addFutureMeeting(contacts, cal);
-		cal.add(Calendar.MONTH,1);
+		cal.add(Calendar.MILLISECOND,1);
 		contacts = cm.getContacts(2,3);
 		cm.addFutureMeeting(contacts, cal);
+		Calendar cal1 = Calendar.getInstance();
+		cal1.add(Calendar.MONTH,1);
+		cm.addFutureMeeting(contacts, cal1);
+
 	}
 	
-	public void addPastMeetings(ContactManagerImpl cm){
+	public void testPastMeetings(ContactManagerImpl cm){
 		Calendar cal = Calendar.getInstance();
 		Set<Contact> contacts = new HashSet<Contact>();
 		contacts = cm.getContacts(2,3);
-		String notes = "testAddPastMeetingNotes";
+		String notes = "initializationNotes";
 		cm.addNewPastMeeting(contacts, cal, notes);
-		System.out.println("pm:" + cm.getPastMeeting(100));
+		cm.addMeetingNotes(100, "__________additionalNotes");
+		Meeting m =  cm.getMeeting(100);
+		//cm.addMeetingNotes(100, "additionalNotes");
+		PastMeeting pm = (PastMeeting)m;
+		System.out.println("notes:" + pm.getNotes());
+		Set<Contact> newContacts = new HashSet<Contact>();
+		newContacts = cm.getContacts(0,1,2,3);
+		String moreNotes = "some notes for the new pastMeeting";
+		cm.addNewPastMeeting(newContacts, cal, moreNotes);
+		PastMeeting pm1 = cm.getPastMeeting(101);
+		System.out.println(""+ pm1.getContacts());
+		System.out.println(""+ pm.getContacts());
+		System.out.println("" + pm1.getNotes());
+		
+	}
+	
+	public void testGetContacts(ContactManagerImpl cm){
+		//Set<Contact> contacts = new HashSet<Contact>();
+		//String n = null;
+		System.out.println(""+cm.getContacts("Geoff"));
+		//System.out.println("testGetContacts: " + contacts);
+		Set<Contact> contactSet = new HashSet<Contact>();
+		contactSet = cm.getContacts(2,4);
+		System.out.println("getContacts: " + contactSet);
+		Calendar cal = Calendar.getInstance();
+		cm.getFutureMeetingList(cal);
+	}
+	
+	public void testGetFutureMeetingListDate(ContactManagerImpl cm){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MONTH,1);
+		System.out.println(cm.getFutureMeetingList(cal));	
 	}
 }
+

@@ -50,8 +50,10 @@ public class ContactImpl implements Contact{
 	}
 	
 	public void addNotes(String note){
-		notes = notes + ";"+ note;
+		notes = notes + " ; "+ note;
 	}
 	
-	
+	public static void resetNextId(){
+		nextId = 0;
+	}
 }
