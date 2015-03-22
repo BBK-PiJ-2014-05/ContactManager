@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 /** implementation of Contact interface.
  * 
  * @author geoff_000
@@ -5,7 +7,7 @@
  */
 
 
-public class ContactImpl implements Contact{
+public class ContactImpl implements Contact, Serializable {
 
 	private String name;
 	private int id = 0;
@@ -51,6 +53,12 @@ public class ContactImpl implements Contact{
 	
 	public void addNotes(String note){
 		notes = notes + " ; "+ note;
+	}
+	
+	@Override
+	public String toString(){
+		String string = "Contact ID: " + id + " Contact Name: " + name + " Contact Notes: " + notes;
+		return string;
 	}
 	
 	public static void resetNextId(){
